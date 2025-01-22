@@ -1,4 +1,4 @@
-import { HashRouter, Navigate, Route, Routes } from "react-router";
+import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import Labs from "./Labs";
 export default function App() {
 
