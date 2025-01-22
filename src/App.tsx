@@ -1,14 +1,16 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-import './App.css'
-
-function App() {
-  // const [count, setCount] = useState(0)
+import { HashRouter, Navigate, Route, Routes } from "react-router";
+import Labs from "./Labs";
+export default function App() {
 
   return (
-    <h1> Welcome to Full stack MERN a1</h1>
-  )
-}
+    <HashRouter>
+      <div>
+        <Routes>
+          <Route path="/" element={<Navigate to="Labs" /> } />
+          <Route path="/Labs/*" element={<Labs />} />
+        </Routes>
 
-export default App
+      </div>
+    </HashRouter>
+  );
+}
