@@ -2,6 +2,15 @@ export default function Lab1() {
   return (
     <div id="wd-lab1">
       <h2>Lab 1</h2>
+      <div id="wd-student-details">
+        Assignment 1 details:
+        <ul id="wd-details">
+          <li>Vinay Jawadagi Section 01</li>
+          <li>Lab 1 : link</li>
+          <li>Kambaz : link</li>
+          <li>Github : link</li>
+        </ul>
+      </div>
       <h3>HTML Examples</h3>
       <div id="wd-h-tag">
         <h4>Heading Tags</h4>
@@ -281,11 +290,17 @@ export default function Lab1() {
       </div>
       <h4>Anchor tag</h4>
       Please
-      <a href="https://www.lipsum.com" id="wd-lipsum"> click here </a>
+      <a href="https://www.lipsum.com" id="wd-lipsum">
+        {' '}
+        click here{' '}
+      </a>
       to get dummy text
       <br />
       Please
-      <a href="https://github.com/vinayjawadagi/kanvaz-react-web-app" id="wd-lipsum"> click here </a>
+      <a href="https://github.com/vinayjawadagi/kanvaz-react-web-app" id="wd-lipsum">
+        {' '}
+        click here{' '}
+      </a>
       to get to my github repo.
       <br />
     </div>
