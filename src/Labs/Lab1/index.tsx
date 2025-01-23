@@ -6,9 +6,21 @@ export default function Lab1() {
         Assignment 1 details:
         <ul id="wd-details">
           <li>Vinay Jawadagi Section 01</li>
-          <li>Lab 1 : link</li>
-          <li>Kambaz : link</li>
-          <li>Github : link</li>
+          <li>
+            <a target="_blank" href="https://a1--kanvaz-react-web-app.netlify.app/#/Labs/Lab1">
+              Lab 1
+            </a>
+          </li>
+          <li>
+            <a target="_blank" href="https://a1--kanvaz-react-web-app.netlify.app/">
+              Kambaz
+            </a>
+          </li>
+          <li>
+            <a target="_blank" href="https://github.com/vinayjawadagi/kanvaz-react-web-app/tree/a1">
+              Github Repo
+            </a>
+          </li>
         </ul>
       </div>
       <h3>HTML Examples</h3>
