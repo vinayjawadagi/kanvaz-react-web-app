@@ -1,43 +1,70 @@
-import { Link } from 'react-router-dom';
+import { ListGroup } from 'react-bootstrap';
+import { BsGripVertical } from 'react-icons/bs';
+import { NavLink } from 'react-router-dom';
+import LessonControlButtons from '../Modules/LessonControlButtons';
+import AssignmentControl from './AssignemnetControl';
+import AssignmentControlButtons from './AssignmentControlButtons';
 
 export default function Assignments() {
     return (
         <div id="wd-assignments">
-            <input id="wd-search-assignment" placeholder="Search for Assignments" />
-            <button id="wd-add-assignment-group">+ Group</button>
-            <button id="wd-add-assignment">+ Assignment</button>
-            <h3 id="wd-assignments-title">
-                ASSIGNMENTS 40% of Total <button>+</button>
-            </h3>
-            <ul id="wd-assignment-list">
-                <li className="wd-assignment-list-item">
-                    <Link to="/Kambaz/Courses/1234/Assignments/123" id="wd-assignment-link">
-                        A1 - ENV + HTML
-                    </Link>
-                    <ul>
-                        Multiple Modules | <strong>Not available until</strong> May 6 at 12:00am |{' '}
-                        <strong>Due</strong> May 20 at 11:59pm | 100 pts
-                    </ul>
-                </li>
-                <li className="wd-assignment-list-item">
-                    <Link to="/Kambaz/Courses/1234/Assignments/123" id="wd-assignment-link">
-                        A2 - CSS + BOOTSTRAP
-                    </Link>
-                    <ul>
-                        Multiple Modules | <strong>Not available until</strong> May 13 at 12:00am |{' '}
-                        <strong>Due</strong> May 20 at 11:59pm | 100 pts
-                    </ul>
-                </li>
-                <li className="wd-assignment-list-item">
-                    <Link to="/Kambaz/Courses/1234/Assignments/123" id="wd-assignment-link">
-                        A3 - JAVASCRIPT + REACT
-                    </Link>
-                    <ul>
-                        Multiple Modules | <strong>Not available until</strong> May 20 at 12:00am |{' '}
-                        <strong>Due</strong> May 20 at 11:59pm | 100 pts
-                    </ul>
-                </li>
-            </ul>
+            <div id="wd-assignments">
+                {' '}
+                <AssignmentControl /> <br />{' '}
+                <ListGroup className="rounded-0" id="wd-modules">
+                    {' '}
+                    <ListGroup.Item className="wd-module p-0 mb-5 fs-5 border-gray">
+                        {' '}
+                        <div className="wd-title p-3 ps-2 bg-secondary">
+                            {' '}
+                            <BsGripVertical className="me-2 fs-3" /> <strong>ASSIGNMENTS</strong>{' '}
+                            <AssignmentControlButtons />{' '}
+                        </div>{' '}
+                        <ListGroup className="wd-lessons rounded-0">
+                            {' '}
+                            <ListGroup.Item className="wd-lesson p-3 ps-1">
+                                {' '}
+                                <BsGripVertical className="me-2 fs-3" />
+                                <NavLink
+                                    to="/Kambaz/Courses/1234/Assignments/123"
+                                    id="wd-assignment-link"
+                                >
+                                    <strong>A1</strong>{' '}
+                                </NavLink>
+                                Multiple Modules | <strong>Not available until</strong> May 13 at
+                                12:00am | <strong>Due</strong> May 20 at 11:59pm | 100 pts{' '}
+                                <LessonControlButtons />{' '}
+                            </ListGroup.Item>{' '}
+                            <ListGroup.Item className="wd-lesson p-3 ps-1">
+                                {' '}
+                                <BsGripVertical className="me-2 fs-3" />{' '}
+                                <NavLink
+                                    to="/Kambaz/Courses/1234/Assignments/123"
+                                    id="wd-assignment-link"
+                                >
+                                    <strong>A2</strong>{' '}
+                                </NavLink>
+                                Multiple Modules | <strong>Not available until</strong> May 13 at
+                                12:00am | <strong>Due</strong> May 15 at 11:59pm | 100 pts{' '}
+                                <LessonControlButtons />{' '}
+                            </ListGroup.Item>{' '}
+                            <ListGroup.Item className="wd-lesson p-3 ps-1">
+                                {' '}
+                                <BsGripVertical className="me-2 fs-3" />{' '}
+                                <NavLink
+                                    to="/Kambaz/Courses/1234/Assignments/123"
+                                    id="wd-assignment-link"
+                                >
+                                    <strong>A3</strong>{' '}
+                                </NavLink>
+                                Multiple Modules | <strong>Not available until</strong> May 20 at
+                                12:00am | <strong>Due</strong> May 20 at 11:59pm | 100 pts{' '}
+                                <LessonControlButtons />{' '}
+                            </ListGroup.Item>{' '}
+                        </ListGroup>{' '}
+                    </ListGroup.Item>{' '}
+                </ListGroup>{' '}
+            </div>
         </div>
     );
 }
