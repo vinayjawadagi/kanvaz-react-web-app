@@ -1,7 +1,15 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Col, Form, Row } from 'react-bootstrap';
+import { Col, Form, Row } from 'react-bootstrap';
+import { Link, useParams } from 'react-router-dom';
+import * as db from '../../Database';
 
 export default function AssignmentEditor() {
+    const { cid, aid } = useParams();
+    const courses = db.courses;
+    const assignments = db.assignments;
+
+    const course = courses.find((course) => course._id === cid);
+    const assignment = assignments.find((assignment) => assignment._id === aid);
     return (
         <div id="wd-assignments-editor" className="container mt-4">
             <Form>
@@ -10,7 +18,7 @@ export default function AssignmentEditor() {
                         Assignment Name
                     </Form.Label>
                     <Col sm={10}>
-                        <Form.Control id="wd-name" value="A1 - ENV + HTML" />
+                        <Form.Control id="wd-name" value={assignment?.title} />
                     </Col>
                 </Form.Group>
                 <Form.Group as={Row} className="mb-3">
@@ -19,7 +27,7 @@ export default function AssignmentEditor() {
                             as="textarea"
                             id="wd-description"
                             rows={3}
-                            defaultValue="The assignment is available online Submit a link to the landing page of your Web application running on Netlify."
+                            value={assignment?.description}
                         />
                     </Col>
                 </Form.Group>
@@ -132,10 +140,15 @@ export default function AssignmentEditor() {
                 <hr />
                 <Form.Group as={Row} className="mb-3">
                     <Col className="d-flex justify-content-end">
-                        <Button variant="secondary" className="me-2">
+                        <Link
+                            to={`/Kambaz/Courses/${cid}/Assignments`}
+                            className="btn btn-secondary"
+                        >
                             Cancel
-                        </Button>
-                        <Button variant="danger">Save</Button>
+                        </Link>
+                        <Link to={`/Kambaz/Courses/${cid}/Assignments`} className="btn btn-danger">
+                            Save
+                        </Link>
                     </Col>
                 </Form.Group>
             </Form>
