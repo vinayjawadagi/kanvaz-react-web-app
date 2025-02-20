@@ -9,7 +9,6 @@ import AssignmentControlButtons from './AssignmentControlButtons';
 export default function Assignments() {
     const { cid } = useParams();
     const assignments = db.assignments.filter((assignment) => assignment.course === cid);
-    const course = db.courses.find((course) => course._id === cid);
 
     return (
         <div id="wd-assignments">

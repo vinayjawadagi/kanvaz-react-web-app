@@ -8,7 +8,6 @@ export default function AssignmentEditor() {
     const courses = db.courses;
     const assignments = db.assignments;
 
-    const course = courses.find((course) => course._id === cid);
     const assignment = assignments.find((assignment) => assignment._id === aid);
     return (
         <div id="wd-assignments-editor" className="container mt-4">
