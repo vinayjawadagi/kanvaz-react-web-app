@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { CiSearch } from 'react-icons/ci';
 import { FaPlus } from 'react-icons/fa6';
@@ -9,9 +8,6 @@ export default function AssignmentControl() {
         navigate(`/Kambaz/Courses/${cid}/Assignments/New`);
     };
     const { cid } = useParams();
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
     return (
         <div id="wd-modules-controls" className="text-nowrap">
             <Form>

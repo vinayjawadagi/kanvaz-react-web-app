@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { addAssignment, updateAssignment } from './reducer'; // Redux actions
 
 export default function AssignmentEditor() {
     const { cid, aid } = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const assignments = useSelector((state: any) => state.assignmentsReducer.assignments);
+    const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+    const { currentUser } = useSelector((state: any) => state.accountReducer);
+
+    const isFaculty = currentUser.Role === 'FACULTY';
 
     // State for form inputs
     const [title, setTitle] = useState('');
@@ -43,6 +45,7 @@ export default function AssignmentEditor() {
 
     const handleSave = () => {
         const newAssignment = {
+            aid,
             title,
             description,
             points,
@@ -70,98 +73,127 @@ export default function AssignmentEditor() {
     };
 
     return (
-        <Container className="mt-4">
-            <h2>{aid === 'New' ? 'Create Assignment' : 'Edit Assignment'}</h2>
-            <Form>
-                <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm={2}>
+        <div id="wd-assignments-editor" className="container mt-4">
+            <div className="row mb-2">
+                <div className="col">
+                    <label htmlFor="wd-name" className="form-label">
                         Assignment Name
-                    </Form.Label>
-                    <Col sm={10}>
-                        <Form.Control value={title} onChange={(e) => setTitle(e.target.value)} />
-                    </Col>
-                </Form.Group>
+                    </label>
+                    <input
+                        id="wd-name"
+                        value={title}
+                        className="form-control"
+                        onChange={(e) => setTitle(e.target.value)}
+                        disabled={!isFaculty}
+                    />
+                </div>
+            </div>
 
-                <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm={2}>
+            <div className="row mb-3">
+                <div className="col-md-12">
+                    <label htmlFor="wd-description" className="form-label">
                         Description
-                    </Form.Label>
-                    <Col sm={10}>
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                        />
-                    </Col>
-                </Form.Group>
+                    </label>
+                    <textarea
+                        cols={50}
+                        rows={10}
+                        id="wd-description"
+                        className="form-control"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        disabled={!isFaculty}
+                    />
+                </div>
+            </div>
 
-                <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm={2}>
+            <div className="row mb-2">
+                <div className="col-md-3 d-flex align-items-center justify-content-end">
+                    <label htmlFor="wd-points" className="form-label">
                         Points
-                    </Form.Label>
-                    <Col sm={10}>
-                        <Form.Control
-                            type="number"
-                            value={points}
-                            onChange={(e) => setPoints(Number(e.target.value))}
-                        />
-                    </Col>
-                </Form.Group>
+                    </label>
+                </div>
+                <div className="col-md-9">
+                    <input
+                        id="wd-points"
+                        type="number"
+                        value={points}
+                        className="form-control"
+                        onChange={(e) => setPoints(Number(e.target.value))}
+                        disabled={!isFaculty}
+                    />
+                </div>
+            </div>
 
-                <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm={2}>
-                        Due Date
-                    </Form.Label>
-                    <Col sm={10}>
-                        <Form.Control
-                            type="date"
-                            value={Date.parse(duedate)}
-                            onChange={(e) => setDueDate(e.target.value)}
-                        />
-                    </Col>
-                </Form.Group>
+            <div className="row mb-3">
+                <div className="col-md-3 d-flex justify-content-end">
+                    <label className="form-label font-weight-bold">Due</label>
+                </div>
+                <div className="col-md-9">
+                    <input
+                        id="wd-due-date"
+                        type="datetime-local"
+                        value={duedate}
+                        className="form-control"
+                        onChange={(e) => setDueDate(e.target.value)}
+                        disabled={!isFaculty}
+                    />
+                </div>
+            </div>
 
-                <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm={2}>
-                        Available From
-                    </Form.Label>
-                    <Col sm={10}>
-                        <Form.Control
-                            type="date"
-                            value={Date.parse(startdate)}
-                            onChange={(e) => setAvailableFrom(e.target.value)}
-                        />
-                    </Col>
-                </Form.Group>
+            <div className="row mb-3">
+                <div className="col-md-3 d-flex justify-content-end">
+                    <label className="form-label font-weight-bold">Available from</label>
+                </div>
+                <div className="col-md-9">
+                    <input
+                        id="wd-available-from"
+                        type="datetime-local"
+                        value={startdate}
+                        className="form-control"
+                        onChange={(e) => setAvailableFrom(e.target.value)}
+                        disabled={!isFaculty}
+                    />
+                </div>
+            </div>
 
-                <Form.Group as={Row} className="mb-3">
-                    <Form.Label column sm={2}>
-                        Available Until
-                    </Form.Label>
-                    <Col sm={10}>
-                        <Form.Control
-                            type="date"
-                            value={Date.parse(availableuntil)}
-                            onChange={(e) => setAvailableUntil(e.target.value)}
-                        />
-                    </Col>
-                </Form.Group>
+            <div className="row mb-3">
+                <div className="col-md-3 d-flex justify-content-end">
+                    <label className="form-label font-weight-bold">Until</label>
+                </div>
+                <div className="col-md-9">
+                    <input
+                        id="wd-available-until"
+                        type="datetime-local"
+                        value={availableuntil}
+                        className="form-control"
+                        onChange={(e) => setAvailableUntil(e.target.value)}
+                        disabled={!isFaculty}
+                    />
+                </div>
+            </div>
 
-                <Row className="mt-4">
-                    <Col className="d-flex justify-content-end">
-                        <Button
-                            variant="secondary"
-                            onClick={() => navigate(`/Kambaz/Courses/${cid}/Assignments`)}
-                        >
-                            Cancel
-                        </Button>
-                        <Button className="ms-2" variant="primary" onClick={handleSave}>
-                            Save Assignment
-                        </Button>
-                    </Col>
-                </Row>
-            </Form>
-        </Container>
+            <hr />
+            {isFaculty && (
+                <div className="row">
+                    <div className="col text-end">
+                        <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
+                            <button className="btn btn-secondary me-2">Cancel</button>
+                        </Link>
+                        <button className="btn btn-danger" onClick={handleSave}>
+                            Save
+                        </button>
+                    </div>
+                </div>
+            )}
+            {!isFaculty && (
+                <div className="row">
+                    <div className="col text-end">
+                        <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
+                            <button className="btn btn-secondary me-2">Back</button>
+                        </Link>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }

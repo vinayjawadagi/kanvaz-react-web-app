@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { ListGroup } from 'react-bootstrap';
 import { BsGripVertical } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,13 +8,19 @@ import { deleteAssignment } from './reducer';
 
 export default function Assignments() {
     const { cid } = useParams();
-    const [assignmentName, setAssignmentName] = useState('');
     const { assignments } = useSelector((state: any) => state.assignmentsReducer);
     const dispatch = useDispatch();
+    const { currentUser } = useSelector((state: any) => state.accountReducer);
+    const isFaculty = currentUser.Role === 'FACULTY';
+    console.log(
+        'Assignments list:',
+        assignments.map((a: any) => a._id)
+    );
     return (
         <div id="wd-assignments">
             <div id="wd-assignments">
-                <AssignmentControl /> <br />
+                {isFaculty && <AssignmentControl />}
+                <br />
                 <ListGroup className="rounded-0" id="wd-modules">
                     <ListGroup.Item className="wd-module p-0 mb-5 fs-5 border-gray">
                         <div className="wd-title p-3 ps-2 bg-secondary">
@@ -24,6 +29,7 @@ export default function Assignments() {
                         <ListGroup className="wd-lessons rounded-0">
                             {assignments
                                 .filter((assignment: any) => assignment.course === cid)
+
                                 .map((assignment: any) => (
                                     <ListGroup.Item
                                         key={assignment._id}
@@ -38,14 +44,15 @@ export default function Assignments() {
                                         </NavLink>
                                         Multiple Modules | <strong>Not available until</strong>
                                         {assignment.startdate} | <strong>Due</strong>{' '}
-                                        {assignment.duedate}
-                                        | 100 pts
-                                        <AssignmentControlButtons
-                                            assignmentId={assignment._id}
-                                            deleteAssignment={(assignmentId) =>
-                                                dispatch(deleteAssignment(assignmentId))
-                                            }
-                                        />
+                                        {assignment.duedate}| 100 pts
+                                        {isFaculty && (
+                                            <AssignmentControlButtons
+                                                assignmentId={assignment._id}
+                                                deleteAssignment={(assignmentId) =>
+                                                    dispatch(deleteAssignment(assignmentId))
+                                                }
+                                            />
+                                        )}
                                     </ListGroup.Item>
                                 ))}
                         </ListGroup>
