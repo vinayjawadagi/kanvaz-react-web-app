@@ -17,7 +17,7 @@ export default function AssignmentEditor() {
             : null;
 
     // State for the assignment form
-    const [_id, set_id] = useState('');
+    const [_id] = useState('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [points, setPoints] = useState(100);
