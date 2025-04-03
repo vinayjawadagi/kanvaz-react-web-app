@@ -1,21 +1,64 @@
+import { useEffect, useState } from 'react';
 import { ListGroup } from 'react-bootstrap';
 import { BsGripVertical } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import AssignmentControl from './AssignemnetControl';
 import AssignmentControlButtons from './AssignmentControlButtons';
-import { deleteAssignment } from './reducer';
+import * as assignmentsClient from './client';
+import { addAssignment, deleteAssignment, setAssignments } from './reducer';
 
 export default function Assignments() {
     const { cid } = useParams();
     const { assignments } = useSelector((state: any) => state.assignmentsReducer);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { currentUser } = useSelector((state: any) => state.accountReducer);
-    const isFaculty = currentUser.Role === 'FACULTY';
-    console.log(
-        'Assignments list:',
-        assignments.map((a: any) => a._id)
-    );
+    const isFaculty = currentUser.role === 'FACULTY';
+
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const createAssignmentForCourse = async (assignment: any) => {
+        try {
+            const newAssignment = await assignmentsClient.createAssignment(
+                cid as string,
+                assignment
+            );
+            dispatch(addAssignment(newAssignment));
+            handleClose();
+        } catch (error) {
+            console.error('Error creating assignment:', error);
+        }
+    };
+
+    const removeAssignment = async (assignmentId: string) => {
+        try {
+            await assignmentsClient.deleteAssignment(assignmentId);
+            dispatch(deleteAssignment(assignmentId));
+        } catch (error) {
+            console.error('Error deleting assignment:', error);
+        }
+    };
+
+    const handleAssignmentClick = (assignmentId: string) => {
+        navigate(`/Kambaz/Courses/${cid}/Assignments/${assignmentId}`);
+    };
+
+    const fetchAssignments = async () => {
+        try {
+            const assignments = await assignmentsClient.findAssignmentsForCourse(cid as string);
+            dispatch(setAssignments(assignments));
+        } catch (error) {
+            console.error('Error fetching assignments:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchAssignments();
+    }, [cid]);
+
     return (
         <div id="wd-assignments">
             <div id="wd-assignments">

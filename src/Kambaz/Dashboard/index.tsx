@@ -20,23 +20,16 @@ export default function Dashboard({
 }) {
     const { currentUser } = useSelector((state: any) => state.accountReducer);
     const { enrollments } = useSelector((state: any) => state.enrollmentsReducer);
-    const isFaculty = currentUser === 'FACULTY';
+
+    const isFaculty = currentUser.role === 'FACULTY';
 
     const [showEnrolled, setShowEnrolled] = useState(true);
-
-    const filteredCourses = showEnrolled
-        ? courses.filter((course) =>
-              enrollments.some(
-                  (enrollment: any) =>
-                      enrollment.user === currentUser._id && enrollment.course === course._id
-              )
-          )
-        : courses;
     const isEnrolled = (courseId: any) =>
         enrollments.some(
             (enrollment: any) =>
                 enrollment.user === currentUser._id && enrollment.course === courseId
         );
+    const filteredCourses = courses;
     const dispatch = useDispatch();
 
     return (
@@ -141,28 +134,30 @@ export default function Dashboard({
                                                 Edit
                                             </button>
                                         )}
-                                        <button
-                                            onClick={(event) => {
-                                                event.preventDefault();
-                                                const enrollment = {
-                                                    user: currentUser._id,
-                                                    course: course._id,
-                                                };
-                                                if (isEnrolled(course._id)) {
-                                                    dispatch(deleteEnrollment(enrollment));
-                                                } else {
-                                                    dispatch(addEnrollment(enrollment));
+                                        {!isFaculty && (
+                                            <button
+                                                onClick={(event) => {
+                                                    event.preventDefault();
+                                                    const enrollment = {
+                                                        user: currentUser._id,
+                                                        course: course._id,
+                                                    };
+                                                    if (isEnrolled(course._id)) {
+                                                        dispatch(deleteEnrollment(enrollment));
+                                                    } else {
+                                                        dispatch(addEnrollment(enrollment));
+                                                    }
+                                                    console.log(enrollments);
+                                                }}
+                                                className={
+                                                    isEnrolled(course._id)
+                                                        ? 'btn btn-danger'
+                                                        : 'btn btn-success'
                                                 }
-                                                console.log(enrollments);
-                                            }}
-                                            className={
-                                                isEnrolled(course._id)
-                                                    ? 'btn btn-danger'
-                                                    : 'btn btn-success'
-                                            }
-                                        >
-                                            {isEnrolled(course._id) ? 'Unenroll' : 'Enroll'}
-                                        </button>
+                                            >
+                                                {isEnrolled(course._id) ? 'Unenroll' : 'Enroll'}
+                                            </button>
+                                        )}
                                     </Card.Body>
                                 </Link>
                             </Card>

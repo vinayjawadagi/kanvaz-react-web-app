@@ -1,199 +1,329 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { addAssignment, updateAssignment } from './reducer'; // Redux actions
+import * as client from './client';
 
 export default function AssignmentEditor() {
-    const { cid, aid } = useParams();
+    const { cid, aid } = useParams(); // Get both course and assignment IDs from params
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const { assignments } = useSelector((state: any) => state.assignmentsReducer);
+    const assignments = useSelector((state: any) => state.assignmentsReducer.assignments);
     const { currentUser } = useSelector((state: any) => state.accountReducer);
 
-    const isFaculty = currentUser.Role === 'FACULTY';
+    const isFaculty = currentUser.role === 'FACULTY';
+    const assignment =
+        aid && aid !== 'New'
+            ? assignments.find((assignment: { _id: string }) => assignment._id === aid)
+            : null;
 
-    // State for form inputs
+    // State for the assignment form
+    const [_id, set_id] = useState('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [points, setPoints] = useState(0);
-    const [duedate, setDueDate] = useState('');
-    const [startdate, setAvailableFrom] = useState('');
-    const [availableuntil, setAvailableUntil] = useState('');
+    const [points, setPoints] = useState(100);
+    const [assignmentGroup, setAssignmentGroup] = useState('ASSIGNMENTS');
+    const [gradeDisplay, setGradeDisplay] = useState('Percentage');
+    const [submissionType, setSubmissionType] = useState('Online');
+    const [dueDate, setDueDate] = useState('');
+    const [availableFrom, setAvailableFrom] = useState('');
+    const [until, setUntil] = useState('');
+    const [course, setCourse] = useState(cid);
 
-    // Check if we are editing an existing assignment
     useEffect(() => {
-        if (aid !== 'New') {
-            const assignment = assignments.find((a: any) => a._id === aid);
-            if (assignment) {
-                setTitle(assignment.title || '');
-                setDescription(assignment.description || '');
-                setPoints(assignment.points || 0);
-                setDueDate(assignment.duedate || '');
-                setAvailableFrom(assignment.startdate || '');
-                setAvailableUntil(assignment.availableuntil || '');
-            }
-        } else {
-            // Reset form for new assignment
-            setTitle('');
-            setDescription('');
-            setPoints(0);
-            setDueDate('');
-            setAvailableFrom('');
-            setAvailableUntil('');
+        if (assignment) {
+            setTitle(assignment.title);
+            setPoints(assignment.points);
+            setAssignmentGroup('ASSIGNMENTS');
+            setGradeDisplay('Percentage');
+            setSubmissionType('Online');
+            setDescription(assignment.description || 'new course'); // Use default description if not provided
+            setDueDate(assignment.dueDate);
+            setAvailableFrom(assignment.availableFrom);
+            setUntil(assignment.until);
+            setCourse(assignment.course);
         }
-    }, [aid, assignments]);
+    }, [assignment]);
 
-    const handleSave = () => {
-        const newAssignment = {
-            aid,
-            title,
-            description,
-            points,
-            duedate,
-            startdate,
-            availableuntil,
-            courseId: cid,
+    const handleSave = async () => {
+        // Prepare the assignment object with default values for missing parameters
+        const assignmentData = {
+            _id: aid !== 'New' ? assignment?._id : `new-${Date.now()}`, // Generate a unique ID for the new assignment if it's new
+            title: title || '',
+            description: description || '',
+            points: points || 0,
+            assignmentGroup: assignmentGroup || 'ASSIGNMENTS',
+            gradeDisplay: gradeDisplay || 'Percentage',
+            submissionType: submissionType || 'Online',
+            dueDate: dueDate || '',
+            availableFrom: availableFrom || '',
+            until: until || '',
+            course: course || cid,
         };
-        // const newAssignment = {
-        //     title: 'New Assignment',
-        //     description: 'Description of the assignment',
-        //     course: 'RS101',
-        //     duedate: '2025-05-01',
-        //     startdate: '2025-04-01',
-        //     availableuntil: '2025-05-15', // Ensure this is passed correctly
-        // };
 
-        if (aid === 'New') {
-            dispatch(addAssignment(newAssignment));
-        } else {
-            dispatch(updateAssignment(newAssignment));
+        try {
+            if (aid !== 'New') {
+                console.log('wot', aid);
+                // Update existing assignment
+                await client.updateAssignment({
+                    ...assignmentData,
+                });
+            } else {
+                // Create new assignment
+                await client.createAssignment(cid as string, assignmentData);
+            }
+            navigate(`/Kambaz/Courses/${cid}/Assignments`);
+        } catch (error) {
+            console.error('Failed to save assignment:', error);
         }
-
-        navigate(`/Kambaz/Courses/${cid}/Assignments`);
     };
 
     return (
-        <div id="wd-assignments-editor" className="container mt-4">
-            <div className="row mb-2">
-                <div className="col">
-                    <label htmlFor="wd-name" className="form-label">
-                        Assignment Name
-                    </label>
-                    <input
-                        id="wd-name"
-                        value={title}
-                        className="form-control"
-                        onChange={(e) => setTitle(e.target.value)}
-                        disabled={!isFaculty}
-                    />
-                </div>
+        <div id="wd-assignments-editor" className="p-3 bg-white border rounded">
+            <div className="mb-3">
+                <label htmlFor="wd-name" className="form-label">
+                    Assignment Name
+                </label>
+                <input
+                    id="wd-name"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="form-control"
+                    disabled={!isFaculty}
+                />
             </div>
-
-            <div className="row mb-3">
-                <div className="col-md-12">
-                    <label htmlFor="wd-description" className="form-label">
-                        Description
-                    </label>
-                    <textarea
-                        cols={50}
-                        rows={10}
-                        id="wd-description"
-                        className="form-control"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        disabled={!isFaculty}
-                    />
-                </div>
+            <div className="mb-3">
+                <label htmlFor="wd-description" className="form-label">
+                    Description
+                </label>
+                <textarea
+                    id="wd-description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="form-control"
+                    rows={3}
+                />
             </div>
-
-            <div className="row mb-2">
-                <div className="col-md-3 d-flex align-items-center justify-content-end">
-                    <label htmlFor="wd-points" className="form-label">
-                        Points
-                    </label>
+            <div className="container">
+                <div className="row mb-3">
+                    <div className="col-4 text-end">
+                        <label htmlFor="wd-points" className="form-label">
+                            Points
+                        </label>
+                    </div>
+                    <div className="col-8">
+                        <input
+                            id="wd-ppoints"
+                            type="number"
+                            value={points}
+                            onChange={(e) => setPoints(Number(e.target.value))}
+                            className="form-control"
+                            disabled={!isFaculty}
+                        />
+                    </div>
                 </div>
-                <div className="col-md-9">
-                    <input
-                        id="wd-points"
-                        type="number"
-                        value={points}
-                        className="form-control"
-                        onChange={(e) => setPoints(Number(e.target.value))}
-                        disabled={!isFaculty}
-                    />
+                <div className="row mb-3">
+                    <div className="col-4 text-end">
+                        <label htmlFor="wd-Assignment-Group" className="form-label">
+                            Assignment Group
+                        </label>
+                    </div>
+                    <div className="col-8">
+                        <select
+                            id="wd-Assignment-Group"
+                            value={assignmentGroup}
+                            onChange={(e) => setAssignmentGroup(e.target.value)}
+                            className="form-control"
+                            disabled={!isFaculty}
+                        >
+                            <option value="ASSIGNMENTS">ASSIGNMENTS</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-
-            <div className="row mb-3">
-                <div className="col-md-3 d-flex justify-content-end">
-                    <label className="form-label font-weight-bold">Due</label>
+                <div className="row mb-3">
+                    <div className="col-4 text-end">
+                        <label htmlFor="wd-Grade" className="form-label">
+                            Display Grade as
+                        </label>
+                    </div>
+                    <div className="col-8">
+                        <select
+                            id="wd-Grade"
+                            value={gradeDisplay}
+                            onChange={(e) => setGradeDisplay(e.target.value)}
+                            className="form-control"
+                            disabled={!isFaculty}
+                        >
+                            <option value="Percentage">Percentage</option>
+                            {/* Add more options if needed */}
+                        </select>
+                    </div>
                 </div>
-                <div className="col-md-9">
-                    <input
-                        id="wd-due-date"
-                        type="datetime-local"
-                        value={duedate}
-                        className="form-control"
-                        onChange={(e) => setDueDate(e.target.value)}
-                        disabled={!isFaculty}
-                    />
+                <div className="row mb-3">
+                    <div className="col-4 text-end">
+                        <label htmlFor="wd-SubmissionType" className="form-label">
+                            Submission Type
+                        </label>
+                    </div>
+                    <div className="col-8">
+                        <select
+                            id="wd-SubmissionType"
+                            value={submissionType}
+                            onChange={(e) => setSubmissionType(e.target.value)}
+                            className="form-control"
+                            disabled={!isFaculty}
+                        >
+                            <option value="Online">Online</option>
+                            {/* Add more options if needed */}
+                        </select>
+                        <label htmlFor="wd-select-entry" className="form-label mb-0">
+                            Online Entry Options
+                        </label>
+                        <div id="wd-select-entry">
+                            <div className="form-check">
+                                <input
+                                    type="radio"
+                                    id="text-entry"
+                                    name="entry-option"
+                                    value="Text Entry"
+                                    className="form-check-input"
+                                    disabled={!isFaculty}
+                                />
+                                <label htmlFor="text-entry" className="form-check-label">
+                                    Text Entry
+                                </label>
+                            </div>
+                            <div className="form-check">
+                                <input
+                                    type="radio"
+                                    id="website-url"
+                                    name="entry-option"
+                                    value="Website URL"
+                                    className="form-check-input"
+                                    disabled={!isFaculty}
+                                />
+                                <label htmlFor="website-url" className="form-check-label">
+                                    Website URL
+                                </label>
+                            </div>
+                            <div className="form-check">
+                                <input
+                                    type="radio"
+                                    id="media-recording"
+                                    name="entry-option"
+                                    value="Media Recording"
+                                    className="form-check-input"
+                                    disabled={!isFaculty}
+                                />
+                                <label htmlFor="media-recording" className="form-check-label">
+                                    Media Recording
+                                </label>
+                            </div>
+                            <div className="form-check">
+                                <input
+                                    type="radio"
+                                    id="student-annotation"
+                                    name="entry-option"
+                                    value="Student Annotation"
+                                    className="form-check-input"
+                                    disabled={!isFaculty}
+                                />
+                                <label htmlFor="student-annotation" className="form-check-label">
+                                    Student Annotation
+                                </label>
+                            </div>
+                            <div className="form-check">
+                                <input
+                                    type="radio"
+                                    id="file-uploads"
+                                    name="entry-option"
+                                    value="File Uploads"
+                                    className="form-check-input"
+                                    disabled={!isFaculty}
+                                />
+                                <label htmlFor="file-uploads" className="form-check-label">
+                                    File Uploads
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <div className="row mb-3">
-                <div className="col-md-3 d-flex justify-content-end">
-                    <label className="form-label font-weight-bold">Available from</label>
+                <div className="row mb-3">
+                    <div className="col-4 text-end">
+                        <label htmlFor="wd-Assign" className="form-label">
+                            Assign
+                        </label>
+                    </div>
+                    <div className="col-8">
+                        <div className="card">
+                            <div className="card-body">
+                                <div className="row mb-2"></div>
+                                <div className="row mb-3">
+                                    <div className="col-12">
+                                        <label htmlFor="wd-date" className="form-label">
+                                            Due
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="wd-date"
+                                            className="form-control"
+                                            value={dueDate}
+                                            onChange={(e) => setDueDate(e.target.value)}
+                                            disabled={!isFaculty}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="row mb-3">
+                                    <div className="col-6">
+                                        <label htmlFor="wd-available-from" className="form-label">
+                                            Available from
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="wd-available-from"
+                                            className="form-control"
+                                            value={availableFrom}
+                                            onChange={(e) => setAvailableFrom(e.target.value)}
+                                            disabled={!isFaculty}
+                                        />
+                                    </div>
+                                    <div className="col-6">
+                                        <label htmlFor="wd-until" className="form-label">
+                                            Until
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="wd-until"
+                                            className="form-control"
+                                            value={until}
+                                            onChange={(e) => setUntil(e.target.value)}
+                                            disabled={!isFaculty}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="col-md-9">
-                    <input
-                        id="wd-available-from"
-                        type="datetime-local"
-                        value={startdate}
-                        className="form-control"
-                        onChange={(e) => setAvailableFrom(e.target.value)}
-                        disabled={!isFaculty}
-                    />
-                </div>
-            </div>
-
-            <div className="row mb-3">
-                <div className="col-md-3 d-flex justify-content-end">
-                    <label className="form-label font-weight-bold">Until</label>
-                </div>
-                <div className="col-md-9">
-                    <input
-                        id="wd-available-until"
-                        type="datetime-local"
-                        value={availableuntil}
-                        className="form-control"
-                        onChange={(e) => setAvailableUntil(e.target.value)}
-                        disabled={!isFaculty}
-                    />
-                </div>
-            </div>
-
-            <hr />
-            {isFaculty && (
-                <div className="row">
-                    <div className="col text-end">
-                        <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
-                            <button className="btn btn-secondary me-2">Cancel</button>
+                <div className="row mt-4">
+                    <div className="col-6">
+                        <Link
+                            to={`/Kambaz/Courses/${cid}/Assignments`}
+                            className="btn btn-secondary"
+                        >
+                            Cancel
                         </Link>
-                        <button className="btn btn-danger" onClick={handleSave}>
+                    </div>
+                    <div className="col-6 text-end">
+                        <button
+                            onClick={handleSave}
+                            className="btn btn-primary"
+                            disabled={!isFaculty}
+                        >
                             Save
                         </button>
                     </div>
                 </div>
-            )}
-            {!isFaculty && (
-                <div className="row">
-                    <div className="col text-end">
-                        <Link to={`/Kambaz/Courses/${cid}/Assignments`}>
-                            <button className="btn btn-secondary me-2">Back</button>
-                        </Link>
-                    </div>
-                </div>
-            )}
+            </div>
         </div>
     );
 }
