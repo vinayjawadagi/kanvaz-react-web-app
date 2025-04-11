@@ -11,7 +11,7 @@ export default function Assignments() {
     const { assignments } = useSelector((state: any) => state.assignmentsReducer);
     const dispatch = useDispatch();
     const { currentUser } = useSelector((state: any) => state.accountReducer);
-    const isFaculty = currentUser.Role === 'FACULTY';
+    const isFaculty = currentUser.role === 'FACULTY';
     console.log(
         'Assignments list:',
         assignments.map((a: any) => a._id)

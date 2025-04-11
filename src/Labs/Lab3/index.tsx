@@ -45,6 +45,7 @@ export default function Lab3() {
                 ))}
             </ListGroup>
             <hr />
+            <hr />
             <VariablesAndConstants />
             <VariableTypes />
             <BooleanVariables />

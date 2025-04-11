@@ -10,7 +10,7 @@ export default function AssignmentEditor() {
     const { assignments } = useSelector((state: any) => state.assignmentsReducer);
     const { currentUser } = useSelector((state: any) => state.accountReducer);
 
-    const isFaculty = currentUser.Role === 'FACULTY';
+    const isFaculty = currentUser.role === 'FACULTY';
 
     // State for form inputs
     const [title, setTitle] = useState('');

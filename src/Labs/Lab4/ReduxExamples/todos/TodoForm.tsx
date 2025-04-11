@@ -1,20 +1,16 @@
-import Button from "react-bootstrap/esm/Button";
-import FormControl from "react-bootstrap/esm/FormControl";
-import ListGroup from "react-bootstrap/esm/ListGroup";
-import { useDispatch, useSelector } from "react-redux";
-import { addTodo, setTodo, updateTodo } from "./todosReducer";
+import { Button, FormControl, ListGroup } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTodo, setTodo, updateTodo } from './todosReducer';
 
 export default function TodoForm() {
     const { todo } = useSelector((state: any) => state.todosReducer);
     const dispatch = useDispatch();
     return (
         <ListGroup.Item>
-            <Button onClick={() =>dispatch(addTodo(todo))} id="wd-add-todo-click">
-                
+            <Button onClick={() => dispatch(addTodo(todo))} id="wd-add-todo-click">
                 Add
             </Button>
             <Button onClick={() => dispatch(updateTodo(todo))} id="wd-update-todo-click">
-                
                 Update
             </Button>
             <FormControl
