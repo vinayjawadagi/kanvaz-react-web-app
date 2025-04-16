@@ -17,6 +17,7 @@ export default function Users() {
             fetchUsers();
         }
     };
+    console.log(name);
     const filterUsersByRole = async (role: string) => {
         setRole(role);
         if (role) {
