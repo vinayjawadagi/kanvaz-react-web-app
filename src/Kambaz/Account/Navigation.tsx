@@ -1,5 +1,8 @@
+import { useSelector } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 export default function AccountNavigation() {
+    const { currentUser } = useSelector((state: any) => state.accountReducer);
+
     return (
         <div id="wd-account-navigation" className="wd list-group fs-5 rounded-0">
             <NavLink
@@ -23,6 +26,15 @@ export default function AccountNavigation() {
             >
                 Profile
             </NavLink>
+            {currentUser && currentUser.role === 'ADMIN' && (
+                <NavLink
+                    to="/Kambaz/Account/Users"
+                    id="wd-account-users-link"
+                    className="list-group-item text-danger border border-0"
+                >
+                    Users
+                </NavLink>
+            )}
         </div>
     );
 }

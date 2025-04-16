@@ -3,6 +3,7 @@ const REMOTE_SERVER = import.meta.env.VITE_REMOTE_SERVER;
 const COURSES_API = `${REMOTE_SERVER}/api/courses`;
 const ASSIGNMENTS_API = `${REMOTE_SERVER}/api/assignments`;
 export const deleteAssignment = async (assignmentId: string) => {
+    console.log(assignmentId);
     const response = await axios.delete(`${ASSIGNMENTS_API}/${assignmentId}`);
     return response.data;
 };

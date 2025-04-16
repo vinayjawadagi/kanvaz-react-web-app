@@ -24,6 +24,11 @@ export default function Assignments() {
         }
     };
 
+    const deleteAssignmentHandler = async (aid: string) => {
+        dispatch(deleteAssignment(aid));
+        await assignmentsClient.deleteAssignment(aid);
+    };
+
     useEffect(() => {
         fetchAssignments();
     }, [cid]);
@@ -60,9 +65,7 @@ export default function Assignments() {
                                         {isFaculty && (
                                             <AssignmentControlButtons
                                                 assignmentId={assignment._id}
-                                                deleteAssignment={(assignmentId) =>
-                                                    dispatch(deleteAssignment(assignmentId))
-                                                }
+                                                deleteAssignment={deleteAssignmentHandler}
                                             />
                                         )}
                                     </ListGroup.Item>

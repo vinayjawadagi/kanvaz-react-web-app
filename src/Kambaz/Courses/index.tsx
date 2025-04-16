@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
 import { FaAlignJustify } from 'react-icons/fa';
 import { Navigate, Route, Routes, useLocation, useParams } from 'react-router';
 import Assignments from './Assignments';
 import AssignmentEditor from './Assignments/Editor';
+import * as coursesClient from './client';
 import Home from './Home';
 import Modules from './Modules';
 import CourseNavigation from './Navigation';
@@ -11,6 +13,15 @@ export default function Courses({ courses }: { courses: any[] }) {
     const { cid } = useParams();
     const { pathname } = useLocation();
     const course = courses.find((course) => course._id === cid);
+    const [users, setUsers] = useState<any[]>([]);
+    const fetchUsers = async () => {
+        const users = await coursesClient.findUsersForCourse(cid!);
+        setUsers(users);
+    };
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
     return (
         <div id="wd-courses">
             <h2 className="text-danger">
@@ -29,7 +40,7 @@ export default function Courses({ courses }: { courses: any[] }) {
                         <Route path="Modules" element={<Modules />} />
                         <Route path="Assignments" element={<Assignments />} />
                         <Route path="Assignments/:aid" element={<AssignmentEditor />} />
-                        <Route path="People" element={<PeopleTable />} />
+                        <Route path="People" element={<PeopleTable users={users} />} />
                         <Route path="Zoom" element={<h2>Zoom</h2>} />
                         <Route path="Quizzes" element={<h2>Quizzes</h2>} />
                         <Route path="Grades" element={<h2>Grades</h2>} />
